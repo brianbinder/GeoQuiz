@@ -6,13 +6,15 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private Button mTrueButton;
     private Button mFalseButton;
-    private Button mNextButton;
+    private ImageButton mNextButton;
+    private ImageButton mPreviousButton;
     private int trueCount = 0;
     private int falseCount = 0;
     private TextView mQuestionTextView;
@@ -48,13 +50,10 @@ public class MainActivity extends AppCompatActivity {
         mQuestionTextView = findViewById(R.id.question_text_view);
         setQuestionText();
         mNextButton = findViewById(R.id.next_button);
-        mNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-                setQuestionText();
-            }
-        });
+        mNextButton.setOnClickListener(getListener());
+        mPreviousButton = findViewById(R.id.previous_button);
+        mPreviousButton.setOnClickListener(getListener(false));
+        mQuestionTextView.setOnClickListener(getListener());
     }
 
     private void setQuestionText() {
@@ -71,5 +70,21 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean getAnswer() {
         return mQuestionBank[mCurrentIndex].isAnswerTrue();
+    }
+
+    private View.OnClickListener getListener() { return getListener(true); }
+    private View.OnClickListener getListener(final boolean next) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeQuestion(next);
+                setQuestionText();
+            }
+        };
+    }
+
+    private void changeQuestion(boolean next) {
+        mCurrentIndex = (mCurrentIndex + (next ? 1 : -1)) % mQuestionBank.length;
+        if (mCurrentIndex < 0) mCurrentIndex = mQuestionBank.length - 1;
     }
 }
