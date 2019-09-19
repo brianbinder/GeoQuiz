@@ -3,6 +3,7 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="wrongAnswer">#FF0000</color>
-    <color name="correctAnswer">#008000</color>
+    <color name="wrongAnswer">#48FF0000</color>
+    <color name="correctAnswer">#4848a832</color>
+    <color name="cheatAnswer">#FFFF33</color>
 </resources>
