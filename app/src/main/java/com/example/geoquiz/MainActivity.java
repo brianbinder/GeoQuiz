@@ -16,6 +16,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String ANSWERS_INDEX = "answers";
     private static final String CHEAT_ANSWER_IS_TRUE = "com.example.geoquiz.answer_is_true";
     private static final int REQUEST_CODE_CHEAT = 0;
 
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceSate);
         d("onSaveInstanceState");
         savedInstanceSate.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceSate.putIntArray(ANSWERS_INDEX, mQuestionAnswers);
     }
 
     @Override
@@ -68,10 +70,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        d("onStart() called");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        d("onResume() called");
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         d("onCreate(Bundle) called");
-        if (savedInstanceState != null) mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+        if (savedInstanceState != null) {
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mQuestionAnswers = savedInstanceState.getIntArray(ANSWERS_INDEX);
+        }
         setContentView(R.layout.activity_main);
 
         mTrueButton = findViewById(R.id.true_button);
@@ -107,17 +124,6 @@ public class MainActivity extends AppCompatActivity {
         setQuestionText();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        d("onStart() called");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        d("onResume() called");
-    }
 
     @Override
     public void onPause() {
