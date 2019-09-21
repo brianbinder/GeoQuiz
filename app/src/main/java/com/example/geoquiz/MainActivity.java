@@ -14,9 +14,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int CHEATS_ALLOWED = 3;
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
     private static final String ANSWERS_INDEX = "answers";
+    private static final String CHEATS_TAKEN = "cheats_taken";
     private static final String CHEAT_ANSWER_IS_TRUE = "com.example.geoquiz.answer_is_true";
     private static final int REQUEST_CODE_CHEAT = 0;
 
@@ -26,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton mPreviousButton;
     private Button mCheatButton;
     private TextView mQuestionTextView;
+    private TextView mCheatsRemaining;
+    private int mCheatsTaken = 0;
 
     private Question[] mQuestionBank = new Question[]{
             new Question(R.string.question_australia, true),
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceSate);
         d("onSaveInstanceState");
         savedInstanceSate.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceSate.putInt(CHEATS_TAKEN, mCheatsTaken);
         savedInstanceSate.putIntArray(ANSWERS_INDEX, mQuestionAnswers);
     }
 
@@ -62,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_CHEAT) {
             if (data != null && CheatActivity.wasAnswerShown(data)) {
                 mQuestionAnswers[mCurrentIndex] = 3;
+                ++mCheatsTaken;
                 setButtonState();
             }
 
@@ -87,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         d("onCreate(Bundle) called");
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mCheatsTaken = savedInstanceState.getInt(CHEATS_TAKEN, 0);
             mQuestionAnswers = savedInstanceState.getIntArray(ANSWERS_INDEX);
         }
         setContentView(R.layout.activity_main);
@@ -108,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
         mQuestionTextView = findViewById(R.id.question_text_view);
         mQuestionTextView.setOnClickListener(getListener());
+        mCheatsRemaining = findViewById(R.id.cheats_remaining_text);
 
         mNextButton = findViewById(R.id.next_button);
         mNextButton.setOnClickListener(getListener());
@@ -179,10 +187,11 @@ public class MainActivity extends AppCompatActivity {
     private void setButtonState() {
         mTrueButton.setBackgroundColor(0x00000000);
         mFalseButton.setBackgroundColor(0x00000000);
+        mCheatsRemaining.setText("Cheats remainging: " + (CHEATS_ALLOWED - mCheatsTaken));
         if (mQuestionAnswers[mCurrentIndex] == 0) {
             mFalseButton.setEnabled(true);
             mTrueButton.setEnabled(true);
-            mCheatButton.setEnabled(true);
+            mCheatButton.setEnabled(mCheatsTaken < CHEATS_ALLOWED);
             return;
         }
         Button colorButton = getAnswer() ? mTrueButton : mFalseButton;
